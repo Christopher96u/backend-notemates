@@ -1,20 +1,22 @@
 import { Module } from '@nestjs/common';
-import appConfig from './config/app.config';
 import { ConfigModule } from '@nestjs/config';
-import { HomeModule } from './home/home.module';
-import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmConfigService } from './database/typeorm-config.service';
+import appConfig from 'src/config/app.config';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { TypeOrmConfigService } from '../typeorm-config.service';
+import { RoleSeedModule } from './role/role-seed.module';
+import { StatusSeedModule } from './status/status-seed.module';
+import { UserSeedModule } from './user/user-seed.module';
+import databaseConfig from 'src/config/database.config';
 
 @Module({
   imports: [
+    RoleSeedModule,
+    StatusSeedModule,
+    UserSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [
-        appConfig,
-        databaseConfig,
-      ],
+      load: [databaseConfig, appConfig],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -23,9 +25,6 @@ import { DataSource, DataSourceOptions } from 'typeorm';
         return new DataSource(options).initialize();
       },
     }),
-    HomeModule,
   ],
-  controllers: [],
-  providers: [],
 })
-export class AppModule { }
+export class SeedModule { }
