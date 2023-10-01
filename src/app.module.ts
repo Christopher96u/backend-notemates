@@ -12,8 +12,8 @@ import { DataSource, DataSourceOptions } from 'typeorm';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
-        appConfig,
         databaseConfig,
+        appConfig,
       ],
       envFilePath: ['.env'],
     }),
