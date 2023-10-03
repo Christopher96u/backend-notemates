@@ -2,69 +2,53 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { StatusEnum } from 'src/statuses/statuses.enum';
-//import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-
+import { faker } from '@faker-js/faker';
 @Injectable()
 export class UserSeedService {
   constructor(
-    //@InjectRepository(User)
-    //private repository: Repository<User>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) { }
+  //TODO: Rework + add faker + refactor + create users
+  async run() {
+    await this.createUsers();
+  }
 
-  /* async run() {
-    const countAdmin = await this.repository.count({
+  async createUsers() {
+    const createUsersByRole = [RoleEnum.ADMIN, RoleEnum.PREMIUM, RoleEnum.USER];
+    const createUsersPromise = createUsersByRole.map(role => this.createUser(role));
+
+    await Promise.all(createUsersPromise);
+  }
+  async createUser(role: RoleEnum) {
+    const countUsers = this.usersRepository.count({
       where: {
         role: {
-          id: RoleEnum.admin,
+          id: role,
         },
       },
     });
-
-    if (!countAdmin) {
-      await this.repository.save(
-        this.repository.create({
-          firstName: 'Super',
-          lastName: 'Admin',
-          email: 'admin@example.com',
-          password: 'secret',
+    if (!countUsers) {
+      const firstName = faker.person.firstName();
+      const lastName = faker.person.lastName();
+      await this.usersRepository.save(
+        this.usersRepository.create({
+          firstName: firstName,
+          lastName: lastName,
+          email: faker.internet.email({ firstName, lastName }),
+          password: 'secret',//TODO: Add encrypt helper function
           role: {
-            id: RoleEnum.admin,
-            name: 'Admin',
+            id: role,
+            name: RoleEnum[role],
           },
           status: {
-            id: StatusEnum.active,
-            name: 'Active',
+            id: StatusEnum.ACTIVE,
+            name: StatusEnum[StatusEnum.ACTIVE],
           },
         }),
       );
     }
-
-    const countUser = await this.repository.count({
-      where: {
-        role: {
-          id: RoleEnum.user,
-        },
-      },
-    });
-
-    if (!countUser) {
-      await this.repository.save(
-        this.repository.create({
-          firstName: 'John',
-          lastName: 'Doe',
-          email: 'john.doe@example.com',
-          password: 'secret',
-          role: {
-            id: RoleEnum.user,
-            name: 'User',
-          },
-          status: {
-            id: StatusEnum.active,
-            name: 'Active',
-          },
-        }),
-      );
-    }
-  } */
+  }
 }

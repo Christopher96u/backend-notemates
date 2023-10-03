@@ -10,7 +10,7 @@ const runSeed = async () => {
   // Run all seeders
   await app.get(RoleSeedService).run();
   await app.get(StatusSeedService).run();
-  //await app.get(UserSeedService).run();
+  await app.get(UserSeedService).run();
 
   await app.close();
 };
