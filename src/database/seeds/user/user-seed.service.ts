@@ -5,13 +5,14 @@ import { StatusEnum } from 'src/statuses/statuses.enum';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
+
 @Injectable()
 export class UserSeedService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) { }
-  //TODO: Rework + add faker + refactor + create users
+  //TODO: Improvement => refactor + add flag to create users based on status?
   async run() {
     await this.createUsers();
   }
@@ -23,7 +24,7 @@ export class UserSeedService {
     await Promise.all(createUsersPromise);
   }
   async createUser(role: RoleEnum) {
-    const countUsers = this.usersRepository.count({
+    const countUsers = await this.usersRepository.count({
       where: {
         role: {
           id: role,
