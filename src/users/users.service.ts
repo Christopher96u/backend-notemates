@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,27 +11,25 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) { }
-
+  //TODO: Rework create method
   create(createProfileDto: CreateUserDto): Promise<User> {
     return this.usersRepository.save(
       this.usersRepository.create(createProfileDto),
     );
   }
 
-  findManyWithPagination({ page, limit }
-  ): Promise<User[]> {
-    return this.usersRepository.find({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  findAll(): Promise<User[]> {
+    return this.usersRepository.find();
   }
 
-  findOne(id): Promise<NullableType<User>> {
-    return this.usersRepository.findOneBy({
-      id: id
-    });
+  async findOne(id: number): Promise<NullableType<User>> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with id #${id} not found`);
+    }
+    return user;
   }
-
+  //TODO: rework update method
   update(id: User['id'], payload: DeepPartial<User>): Promise<User> {
     return this.usersRepository.save(
       this.usersRepository.create({
@@ -41,7 +39,11 @@ export class UsersService {
     );
   }
 
-  async softDelete(id: User['id']): Promise<void> {
-    await this.usersRepository.softDelete(id);
+  async softDelete(id: number): Promise<void> {
+    const removeResponse = await this.usersRepository.softDelete(id);
+    if (removeResponse.affected === 1) return;
+    throw new NotFoundException(`User with id #${id} cant be removed`);
   }
+
+  //TODO: Implement hard delete
 }

@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, ManyToOne, P
 import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 
 /**
 * TODO: Improve fields and required fields
@@ -15,21 +15,18 @@ export class User {
   // For "string | null" we need to use String type.
   // More info: https://github.com/typeorm/typeorm/issues/2567
   @Column({ type: String, unique: true, nullable: true })
-  @Expose({ groups: ['me', 'admin'] })
   email: string | null;
 
   @Column({ nullable: true })
-  @Exclude({ toPlainOnly: true })
+  @Exclude({ toPlainOnly: true }) // Just excluded from JSON responses
   password: string;
 
 
   @Column({ default: AuthProvidersEnum.EMAIL })
-  @Expose({ groups: ['me', 'admin'] })
   provider: string;
 
   @Index()
   @Column({ type: String, nullable: true })
-  @Expose({ groups: ['me', 'admin'] })
   socialId: string | null;
 
   @Index()
