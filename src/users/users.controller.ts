@@ -26,9 +26,8 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @HttpCode(HttpStatus.OK)
   update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.update(id, updateProfileDto);

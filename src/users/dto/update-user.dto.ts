@@ -11,23 +11,15 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsEmail()
-  email?: string | null;
+  email?: string;
 
   @IsOptional()
   @MinLength(6)
   password?: string;
 
-  provider?: string;
-
-  socialId?: string | null;
+  @IsOptional()
+  firstName?: string;
 
   @IsOptional()
-  firstName?: string | null;
-
-  @IsOptional()
-  lastName?: string | null;
-
-  @IsOptional()
-  role?: Role | null;
-
+  lastName?: string;
 }

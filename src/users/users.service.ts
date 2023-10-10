@@ -11,7 +11,7 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) { }
-  //TODO: Rework create method
+
   create(createProfileDto: CreateUserDto): Promise<User> {
     return this.usersRepository.save(
       this.usersRepository.create(createProfileDto),
@@ -29,14 +29,14 @@ export class UsersService {
     }
     return user;
   }
-  //TODO: rework update method
-  update(id: User['id'], payload: DeepPartial<User>): Promise<User> {
-    return this.usersRepository.save(
-      this.usersRepository.create({
-        id,
-        ...payload,
-      }),
-    );
+
+  async update(id: number, payload: DeepPartial<User>): Promise<User> {
+    const currentUser = await this.usersRepository.findOneBy({ id });
+    if (!currentUser) {
+      throw new NotFoundException(`User with id #${id} not found`);
+    }
+    this.usersRepository.merge(currentUser, payload);
+    return this.usersRepository.save(currentUser);
   }
 
   async softDelete(id: number): Promise<void> {
