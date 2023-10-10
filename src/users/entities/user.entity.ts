@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn, } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
@@ -41,12 +41,20 @@ export class User {
   @ManyToOne(() => Role, {
     eager: true,
   })
-  role?: Role | null;
+  @JoinColumn({ name: 'roleId' }) // Specify the name of the column in the database
+  role: Role;
+
+  @Column({ default: 2 }) // Assign the default role ID - default is user
+  roleId: number;
 
   @ManyToOne(() => Status, {
     eager: true,
   })
-  status?: Status;
+  @JoinColumn({ name: 'statusId' }) // Specify the name of the column in the database
+  status: Status;
+
+  @Column({ default: 1 }) // Assign the default role ID - default is active
+  statusId: number;
 
 
   @CreateDateColumn()

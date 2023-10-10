@@ -18,10 +18,8 @@ export class CreateUserDto {
   socialId?: string | null;
 
   @IsNotEmpty()
-  firstName: string | null;
+  firstName: string;
 
   @IsNotEmpty()
-  lastName: string | null;
-
-  role?: Role | null;
+  lastName: string;
 }
