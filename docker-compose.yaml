@@ -23,15 +23,15 @@ services:
       - 3000:3000 # Update ports to grab env vars
     depends_on:
       #- redis
-      - postgres
+      - postgres-notemates
   #redis: # Name of container
     #image: redis
     #ports:
       #- 6379:6379
     #volumes: 
       #- redis:/data
-  postgres:
-    container_name: postgres
+  postgres-notemates:
+    container_name: postgres-notemates
     image: postgres
     restart: always
     environment:
