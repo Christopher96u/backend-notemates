@@ -2,25 +2,28 @@
 # Stop development: docker-compose stop
 # Start development (keeping db): docker-compose start
 # Remove all volumes: docker-compose down --volumes
-# ....
 # Redis is deactivated at the moment.
 version: '3.9'
 services:
-  api:
-    container_name: api
+  api-notemates:
+    container_name: api-notemates
     build:
       dockerfile: Dockerfile
       context: .
-      # Only will build development stage from our dockerfile
-      target: development
+      args:
+        - BUILD_STAGE=${BUILD_STAGE}
+      target: ${BUILD_STAGE}
     env_file:
         - .env
+    environment:
+      - BUILD_STAGE=${BUILD_STAGE}    
     volumes:
       - .:/usr/src/app
     # Run in dev Mode: npm run start:dev
-    command: npm run start:dev
+    # Run in prod Mode: node dist/main.js
+    command: sh -c "if [ '$BUILD_STAGE' = 'development' ]; then npm run start:dev; else node dist/main.js; fi"
     ports:
-      - 3000:3000 # Update ports to grab env vars
+      - ${APP_PORT}:3000 # 3001:3000
     depends_on:
       #- redis
       - postgres-notemates
@@ -35,15 +38,11 @@ services:
     image: postgres
     restart: always
     environment:
-      # Update ports to grab env vars
-      #POSTGRES_DB: ${DATABASE_NAME}
-      #POSTGRES_USER: ${DATABASE_USERNAME}
-      #POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: notematesdblatest
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports: 
-      - '5432:5432' # Update ports to grab env vars
+      - ${DATABASE_PORT}:5432 # 5434:5432
     volumes:
       - docker-nest-postgres:/var/lib/postgresql/data
 
