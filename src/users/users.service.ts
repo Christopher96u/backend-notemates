@@ -4,6 +4,7 @@ import { DeepPartial, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
+import { EntityCondition } from 'src/utils/types/entity-condition.type';
 
 @Injectable()
 export class UsersService {
@@ -22,10 +23,10 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(id: number): Promise<NullableType<User>> {
-    const user = await this.usersRepository.findOneBy({ id });
+  async findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
+    const user = await this.usersRepository.findOne({ where: fields });
     if (!user) {
-      throw new NotFoundException(`User with id #${id} not found`);
+      throw new NotFoundException(`User not found`);
     }
     return user;
   }

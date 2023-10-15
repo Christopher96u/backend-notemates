@@ -1,6 +1,7 @@
 export type AllConfigType = {
     app: AppConfig;
     database: DatabaseConfig;
+    auth: AuthConfig;
 };
 
 export type AppConfig = {
@@ -25,4 +26,11 @@ export type DatabaseConfig = {
     ca?: string;
     key?: string;
     cert?: string;
+};
+
+export type AuthConfig = {
+    secret?: string;
+    expires?: string;
+    refreshSecret?: string;
+    refreshExpires?: string;
 };

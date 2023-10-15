@@ -22,7 +22,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number): Promise<NullableType<User>> {
-    return this.usersService.findOne(id);
+    return this.usersService.findOne({ id });
   }
 
   @Patch(':id')
