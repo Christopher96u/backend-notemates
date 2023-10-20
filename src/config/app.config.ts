@@ -18,6 +18,10 @@ class EnvironmentVariablesValidator {
     @IsString()
     @IsOptional()
     API_PREFIX: string;
+
+    @IsUrl({ require_tld: false })
+    @IsOptional()
+    FRONTEND_DOMAIN: string;
 }
 
 export default registerAs<AppConfig>('app', () => {
@@ -26,6 +30,7 @@ export default registerAs<AppConfig>('app', () => {
     return {
         nodeEnv: process.env.NODE_ENV || DEFAULT_NODE_ENV,
         name: process.env.APP_NAME || DEFAULT_APP_NAME,
+        workingDirectory: process.env.PWD || process.cwd(),
         frontendDomain: process.env.FRONTEND_DOMAIN,
         port: process.env.APP_PORT ? parseInt(process.env.APP_PORT, 10) : DEFAULT_APP_PORT,
         apiPrefix: process.env.API_PREFIX || DEFAULT_API_PREFIX
