@@ -9,6 +9,8 @@ export type AppConfig = {
     name: string;
     port: number;
     apiPrefix: string;
+    frontendDomain?: string;
+    workingDirectory: string;
 };
 
 export type DatabaseConfig = {
