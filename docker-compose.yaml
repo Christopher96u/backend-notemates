@@ -21,9 +21,10 @@ services:
       - .:/usr/src/app
     # Run in dev Mode: npm run start:dev
     # Run in prod Mode: node dist/main.js
-    command: sh -c "if [ '$BUILD_STAGE' = 'development' ]; then npm run start:dev; else node dist/main.js; fi"
+    command: sh -c "if [ '$BUILD_STAGE' = 'development' ]; then npm run start:debug; else node dist/main.js; fi"
     ports:
       - ${APP_PORT}:3000 # 3001:3000
+      - "9229:9229"    # Debugging port
     depends_on:
       #- redis
       - postgres-notemates
