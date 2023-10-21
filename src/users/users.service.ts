@@ -23,12 +23,10 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
-    const user = await this.usersRepository.findOne({ where: fields });
-    if (!user) {
-      throw new NotFoundException(`User not found`);
-    }
-    return user;
+  findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
+    return this.usersRepository.findOne({
+      where: fields,
+    });
   }
 
   async update(id: number, payload: DeepPartial<User>): Promise<User> {

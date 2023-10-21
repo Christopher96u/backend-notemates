@@ -1,3 +1,4 @@
+import { Status } from 'src/statuses/entities/status.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
@@ -18,8 +19,14 @@ export class CreateUserDto {
   socialId?: string | null;
 
   @IsNotEmpty()
-  firstName: string;
+  firstName: string | null;
 
   @IsNotEmpty()
-  lastName: string;
+  lastName: string | null;
+
+  hash?: string | null;
+
+  role?: Role | null;
+
+  status?: Status;
 }

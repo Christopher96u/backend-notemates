@@ -42,7 +42,7 @@ export class User {
     eager: true,
   })
   @JoinColumn({ name: 'roleId' }) // Specify the name of the column in the database
-  role: Role;
+  role?: Role | null;
 
   @Column({ default: 2 }) // Assign the default role ID - default is user
   roleId: number;
@@ -51,10 +51,14 @@ export class User {
     eager: true,
   })
   @JoinColumn({ name: 'statusId' }) // Specify the name of the column in the database
-  status: Status;
+  status?: Status;
 
-  @Column({ default: 1 }) // Assign the default role ID - default is active
+  @Column({ default: 2 }) // Assign the default role ID - default is INACTIVE
   statusId: number;
+
+  @Column({ type: String, nullable: true })
+  @Index()
+  hash: string | null;
 
 
   @CreateDateColumn()

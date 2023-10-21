@@ -38,15 +38,13 @@ export class AuthService {
     private configService: ConfigService<AllConfigType>,
   ) { }
 
-  async validateLogin(
-    authEmailLoginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  async validateLogin(authEmailLoginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
     const user = await this.usersService.findOne({
       email: authEmailLoginDto.email,
     });
 
     if (!user) {
-      throw new NotFoundException(`User not found`);;
+      throw new NotFoundException(`User not found`);
     }
 
     if (user.provider !== AuthProvidersEnum.EMAIL) {
@@ -121,10 +119,10 @@ export class AuthService {
       user = userByEmail;
     } else {
       const role = plainToClass(Role, {
-        id: RoleEnum.user,
+        id: RoleEnum.USER,
       });
       const status = plainToClass(Status, {
-        id: StatusEnum.active,
+        id: StatusEnum.ACTIVE,
       });
 
       user = await this.usersService.create({
@@ -154,9 +152,7 @@ export class AuthService {
       );
     }
 
-    const session = await this.sessionService.create({
-      user,
-    });
+    const session = await this.sessionService.create({ user });
 
     const {
       token: jwtToken,
@@ -177,21 +173,12 @@ export class AuthService {
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const hash = crypto.createHash('sha256').update(randomStringGenerator()).digest('hex');
 
     await this.usersService.create({
       ...dto,
       email: dto.email,
-      role: {
-        id: RoleEnum.user,
-      } as Role,
-      status: {
-        id: StatusEnum.inactive,
-      } as Status,
-      hash,
+      hash
     });
 
     await this.mailService.userSignUp({
@@ -216,12 +203,12 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    user.hash = null;
-    user.status = plainToClass(Status, {
-      id: StatusEnum.active,
+    await this.usersService.update(user.id, {
+      hash: null,
+      status: {
+        id: StatusEnum.ACTIVE
+      }
     });
-    await user.save();
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -241,10 +228,7 @@ export class AuthService {
       );
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const hash = crypto.createHash('sha256').update(randomStringGenerator()).digest('hex');
     await this.forgotService.create({
       hash,
       user,
@@ -278,14 +262,16 @@ export class AuthService {
     }
 
     const user = forgot.user;
-    user.password = password;
+    //user.password = password;// TODO: HASH PASSWORD
 
     await this.sessionService.softDelete({
       user: {
         id: user.id,
       },
     });
-    await user.save();
+    await this.usersService.update(user.id, {
+      password,
+    });
     await this.forgotService.softDelete(forgot.id);
   }
 
@@ -295,10 +281,7 @@ export class AuthService {
     });
   }
 
-  async update(
-    userJwtPayload: JwtPayloadType,
-    userDto: AuthUpdateDto,
-  ): Promise<NullableType<User>> {
+  async update(userJwtPayload: JwtPayloadType, userDto: AuthUpdateDto): Promise<NullableType<User>> {
     if (userDto.password) {
       if (userDto.oldPassword) {
         const currentUser = await this.usersService.findOne({
@@ -360,9 +343,7 @@ export class AuthService {
     });
   }
 
-  async refreshToken(
-    data: Pick<JwtRefreshPayloadType, 'sessionId'>,
-  ): Promise<Omit<LoginResponseType, 'user'>> {
+  async refreshToken(data: Pick<JwtRefreshPayloadType, 'sessionId'>): Promise<Omit<LoginResponseType, 'user'>> {
     const session = await this.sessionService.findOne({
       where: {
         id: data.sessionId,
