@@ -6,7 +6,7 @@ import { HomeService } from './home.service';
 export class HomeController {
   constructor(private service: HomeService) { }
 
-  @Get()
+  @Get("/home")
   appInfo() {
     return this.service.appInfo();
   }

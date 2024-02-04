@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import appConfig from './config/app.config';
+import authConfig from './config/auth.config';
 import { ConfigModule } from '@nestjs/config';
 import { HomeModule } from './home/home.module';
 import databaseConfig from './config/database.config';
@@ -7,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { UsersModule } from './users/users.module';
       load: [
         databaseConfig,
         appConfig,
+        authConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -25,7 +28,8 @@ import { UsersModule } from './users/users.module';
       },
     }),
     HomeModule,
-    UsersModule
+    UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
