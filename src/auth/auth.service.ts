@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedE
 import ms from 'ms';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
@@ -17,7 +17,7 @@ import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
-import { MailService } from 'src/mail/mail.service';
+//import { MailService } from 'src/mail/mail.service';
 import { NullableType } from '../utils/types/nullable.type';
 import { LoginResponseType } from './types/login-response.type';
 import { ConfigService } from '@nestjs/config';
@@ -34,7 +34,7 @@ export class AuthService {
     private usersService: UsersService,
     private forgotService: ForgotService,
     private sessionService: SessionService,
-    private mailService: MailService,
+    //private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
   ) { }
 
@@ -44,7 +44,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User not found`);
+      throw new NotFoundException('User not found');
     }
 
     if (user.provider !== AuthProvidersEnum.EMAIL) {
@@ -181,12 +181,12 @@ export class AuthService {
       hash
     });
 
-    await this.mailService.userSignUp({
-      to: dto.email,
-      data: {
-        hash,
-      },
-    });
+    // await this.mailService.userSignUp({
+    //  to: dto.email,
+    //  data: {
+    //    hash,
+    //  },
+    //});
   }
 
   async confirmEmail(hash: string): Promise<void> {
@@ -234,12 +234,12 @@ export class AuthService {
       user,
     });
 
-    await this.mailService.forgotPassword({
-      to: email,
-      data: {
-        hash,
-      },
-    });
+    //await this.mailService.forgotPassword({
+    // to: email,
+    // data: {
+    //   hash,
+    // },
+    //});
   }
 
   async resetPassword(hash: string, password: string): Promise<void> {

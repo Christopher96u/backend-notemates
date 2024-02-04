@@ -5,6 +5,7 @@ import { StatusEnum } from 'src/statuses/statuses.enum';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserSeedService {
@@ -31,6 +32,8 @@ export class UserSeedService {
         },
       },
     });
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash('secret', salt);
     if (!countUsers) {
       const firstName = faker.person.firstName();
       const lastName = faker.person.lastName();
@@ -39,7 +42,7 @@ export class UserSeedService {
           firstName: firstName,
           lastName: lastName,
           email: faker.internet.email({ firstName, lastName }),
-          password: 'secret',//TODO: Add encrypt helper function
+          password: hashedPassword,
           role: {
             id: role,
             name: RoleEnum[role],

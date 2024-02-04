@@ -16,9 +16,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('email/login')
-  public login(
-    @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
     return this.authService.validateLogin(loginDto);
   }
 
