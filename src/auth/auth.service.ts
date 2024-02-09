@@ -17,7 +17,7 @@ import { SocialInterface } from 'src/social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { ForgotService } from 'src/forgot/forgot.service';
-//import { MailService } from 'src/mail/mail.service';
+import { MailService } from 'src/mail/mail.service';
 import { NullableType } from '../utils/types/nullable.type';
 import { LoginResponseType } from './types/login-response.type';
 import { ConfigService } from '@nestjs/config';
@@ -34,7 +34,7 @@ export class AuthService {
     private usersService: UsersService,
     private forgotService: ForgotService,
     private sessionService: SessionService,
-    //private mailService: MailService,
+    private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
   ) { }
 
@@ -53,6 +53,17 @@ export class AuthService {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
             email: `needLoginViaProvider:${user.provider}`,
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+    if (user.statusId === StatusEnum.INVITED) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            email: `needConfirmEmail`,
           },
         },
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -174,19 +185,29 @@ export class AuthService {
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
     const hash = crypto.createHash('sha256').update(randomStringGenerator()).digest('hex');
-
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(dto.password, salt);
     await this.usersService.create({
       ...dto,
       email: dto.email,
-      hash
+      password: hashedPassword,
+      hash,
+      role: {
+        id: RoleEnum.USER,
+        name: RoleEnum[RoleEnum.USER],
+      },
+      status: {
+        id: StatusEnum.ACTIVE,
+        name: StatusEnum[StatusEnum.INVITED],
+      },
     });
 
-    // await this.mailService.userSignUp({
-    //  to: dto.email,
-    //  data: {
-    //    hash,
-    //  },
-    //});
+    await this.mailService.userSignUp({
+      to: dto.email,
+      data: {
+        hash
+      },
+    });
   }
 
   async confirmEmail(hash: string): Promise<void> {
@@ -234,12 +255,12 @@ export class AuthService {
       user,
     });
 
-    //await this.mailService.forgotPassword({
-    // to: email,
-    // data: {
-    //   hash,
-    // },
-    //});
+    await this.mailService.forgotPassword({
+      to: email,
+      data: {
+        hash,
+      },
+    });
   }
 
   async resetPassword(hash: string, password: string): Promise<void> {
@@ -262,7 +283,9 @@ export class AuthService {
     }
 
     const user = forgot.user;
-    //user.password = password;// TODO: HASH PASSWORD
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+    user.password = hashedPassword;
 
     await this.sessionService.softDelete({
       user: {
@@ -322,6 +345,9 @@ export class AuthService {
             },
             excludeId: userJwtPayload.sessionId,
           });
+          const salt = await bcrypt.genSalt();
+          const hashedPassword = await bcrypt.hash(userDto.password, salt);
+          userDto.password = hashedPassword;
         }
       } else {
         throw new HttpException(

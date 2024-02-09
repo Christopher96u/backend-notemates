@@ -12,6 +12,8 @@ export type AppConfig = {
     apiPrefix: string;
     frontendDomain?: string;
     workingDirectory: string;
+    fallbackLanguage: string;
+    headerLanguage: string;
 };
 
 export type DatabaseConfig = {

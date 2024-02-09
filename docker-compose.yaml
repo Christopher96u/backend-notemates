@@ -28,6 +28,14 @@ services:
     depends_on:
       #- redis
       - postgres-notemates
+  maildev:
+   container_name: mail-server-notemates   
+   build:
+      context: .
+      dockerfile: maildev.Dockerfile
+   ports:
+    - ${MAIL_CLIENT_PORT}:1080
+    - ${MAIL_PORT}:1025  
   #redis: # Name of container
     #image: redis
     #ports:

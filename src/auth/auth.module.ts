@@ -7,7 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AnonymousStrategy } from './strategies/anonymous.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { ForgotModule } from 'src/forgot/forgot.module';
-//import { MailModule } from 'src/mail/mail.module';
+import { MailModule } from 'src/mail/mail.module';
 import { SessionModule } from 'src/session/session.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
@@ -17,7 +17,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     ForgotModule,
     SessionModule,
     PassportModule,
-    //MailModule,
+    MailModule,
     JwtModule.register({}),
   ],
   controllers: [AuthController],

@@ -14,6 +14,7 @@ export class UsersService {
   ) { }
 
   create(createProfileDto: CreateUserDto): Promise<User> {
+
     return this.usersRepository.save(
       this.usersRepository.create(createProfileDto),
     );
