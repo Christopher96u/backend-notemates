@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { DatabaseConfig } from './config.type';
-import { IsOptional, IsString, ValidateIf, IsBoolean  } from 'class-validator';
+import { IsOptional, IsString, ValidateIf  } from 'class-validator';
 import validateConfig from 'src/utils/validate-config';
 import { DEFAULT_DATABASE_PORT, DEFAULT_DATABASE_MAX_CONNECTIONS } from 'src/utils/constants/database.config';
 
@@ -40,7 +40,6 @@ class EnvironmentVariablesValidator {
   @IsOptional()
   DATABASE_MAX_CONNECTIONS: number;
 
-  @IsBoolean()
   @IsOptional()
   DATABASE_SSL_ENABLED: boolean;
 
